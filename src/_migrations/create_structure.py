@@ -12,6 +12,7 @@ def create_tables(connection_string):
                 CREATE TABLE departments (
                     id INT,
                     department NVARCHAR(255),
+                    process_timestamp DATETIME,
                     PRIMARY KEY (id)
                 )
             ''')
@@ -21,6 +22,7 @@ def create_tables(connection_string):
                 CREATE TABLE jobs (
                     id INT,
                     job NVARCHAR(255),
+                    process_timestamp DATETIME,
                     PRIMARY KEY (id)
                 )
             ''')
@@ -31,8 +33,9 @@ def create_tables(connection_string):
                     id INT,
                     name NVARCHAR(255),
                     hire_datetime DATETIME,
-                    department_id INT,
-                    job_id INT,
+                    department_id INT NULL,
+                    job_id INT NULL,
+                    process_timestamp DATETIME,
                     PRIMARY KEY (id),
                     FOREIGN KEY (department_id) REFERENCES departments(id),
                     FOREIGN KEY (job_id) REFERENCES jobs(id)
