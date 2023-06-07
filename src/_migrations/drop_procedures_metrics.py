@@ -1,30 +1,25 @@
 import pyodbc
 
-def drop_tables(connection_string):
+def drop_procedures(connection_string):
     try:
         # Conectarse a la base de datos
         conn = pyodbc.connect(connection_string)
         cursor = conn.cursor()
 
         try:
-            # Eliminar la tabla 'hired_employees'
+            # Eliminar 'GetEmployeeHiredByQuarterMetrics'
             cursor.execute('''
-                DROP TABLE hired_employees
+                DROP PROCEDURE GetEmployeeHiredByQuarterMetrics
             ''')
             
-            # Eliminar la tabla 'departments'
+            # Eliminar 'GetDepartmentsAboveAverageMetrics'
             cursor.execute('''
-                DROP TABLE departments
-            ''')
-
-            # Eliminar la tabla 'jobs'
-            cursor.execute('''
-                DROP TABLE jobs
+                DROP PROCEDURE GetDepartmentsAboveAverageMetrics
             ''')
 
             # Confirmar los cambios
             conn.commit()
-            print("Estructura de tablas borrada con éxito.")
+            print("Procesdimientos borrados con éxito.")
 
         except pyodbc.Error as e:
             # Manejar errores de consulta SQL
