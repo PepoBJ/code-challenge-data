@@ -1,10 +1,11 @@
 import csv
+from flask import jsonify
 from io import TextIOWrapper
 from datetime import datetime
 from models.base_model import BaseModel
 from factories.model_factory import ModelFactory
 
-class ChargeData:
+class ChargeDataController:
     def __init__(self, database):
         self.database = database
         self.session = self.database.get_session()
@@ -17,7 +18,7 @@ class ChargeData:
         files = request.files.getlist('files')
         
         if not files:
-            return "No se han enviado archivos CSV", 400
+            return jsonify({'error': "No se han enviado archivos CSV"}), 400
 
         try:
             for file in files:
@@ -36,7 +37,7 @@ class ChargeData:
 
                 # Verificar si el archivo CSV está vacío
                 if file_empty:
-                    return "El archivo CSV está vacío", 400
+                    return jsonify({'error': "El archivo CSV está vacío"}), 400
 
                 # Obtener los nombres de las columnas del modelo
                 column_names = [column.name for column in model.__table__.columns if column.name != 'process_timestamp']
@@ -54,7 +55,7 @@ class ChargeData:
                     
                     # Verificar si la fila tiene la cantidad correcta de columnas
                     if len(row) != len(column_names):
-                        return "El archivo CSV tiene un formato incorrecto", 400
+                        return jsonify({'error': "El archivo CSV tiene un formato incorrecto"}), 400
 
                     # Crear un diccionario con los nombres de las columnas y los valores de la fila
                     row_dict = {column_name: value for column_name, value in zip(column_names, row)}
@@ -75,14 +76,12 @@ class ChargeData:
 
             self.session.commit()
 
-            print("Datos cargados con éxito.")
-            return "Datos cargados con éxito."
+            return jsonify({'message': "Datos cargados con éxito."})
 
         except Exception as e:
             # Manejar errores
             self.session.rollback()
-            print(f"Error al cargar los datos: {e}")
-            return f"Error al cargar los datos: {e}", 500
+            return jsonify({'error': f"Error al cargar los datos: {e}"}), 500
 
         finally:
             # Cerrar la sesión

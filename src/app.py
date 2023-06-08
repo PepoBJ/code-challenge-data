@@ -3,8 +3,9 @@ from flask import Flask
 from config import environment as env
 from config.database import Database
 
-from routes.test_route import test_route_bp
-from routes.charge_route import charge_route_bp
+from routes.charge_data_route import charge_route_bp
+from routes.department_above_average_route import department_above_average_metrics_route_bp
+from routes.employee_hired_route import employee_hired_metrics_route_bp
 
 from _migrations.create_structure import create_tables
 from _migrations.drop_structure import drop_tables
@@ -16,8 +17,9 @@ def create_app():
     database = Database()
     app.config['DATABASE_INSTANCE'] = database
 
-    app.register_blueprint(test_route_bp)
     app.register_blueprint(charge_route_bp)
+    app.register_blueprint(department_above_average_metrics_route_bp)
+    app.register_blueprint(employee_hired_metrics_route_bp)
     return app
 
 def initialize_db():
