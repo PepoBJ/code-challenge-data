@@ -1,5 +1,9 @@
 import sys
-from flask import Flask
+from flask import Flask, jsonify
+
+from flask_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
+
 from config import environment as env
 from config.database import Database
 
@@ -20,6 +24,20 @@ def create_app():
     app.register_blueprint(charge_route_bp)
     app.register_blueprint(department_above_average_metrics_route_bp)
     app.register_blueprint(employee_hired_metrics_route_bp)
+
+    ### swagger ###
+    SWAGGER_URL = '/swagger'
+    API_URL = '/static/swagger.json'
+    SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+        SWAGGER_URL,
+        API_URL,
+        config={
+            'app_name': "Data Challenge"
+        }
+    )
+    app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+    ### end swagger ###
+
     return app
 
 def initialize_db():
@@ -53,7 +71,6 @@ def run():
             clean_procedures()
         else:
             raise ValueError(f"Invalid argument '{command}' to initialize the database")
-
     else:
         start_app()
 

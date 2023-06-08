@@ -1,0 +1,241 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "Data Challenge",
+        "version": "1.0.0",
+        "title": "Api-Data-Challenge",
+        "contact": {
+            "email": "bj112143@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "paths": {
+        "/charge": {
+            "post": {
+                "summary": "Endpoint para cargar datos",
+                "tags": [
+                    "Carga de datos"
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "object": {
+                                        "type": "string",
+                                        "description": "Nombre de la tabla de destino (jobs, departments, employees)"
+                                    },
+                                    "files": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        },
+                                        "description": "Archivos CSV a cargar"
+                                    }
+                                },
+                                "required": ["object", "files"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Datos cargados exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error en la solicitud",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/department_above_average/metrics/{year}": {
+            "get": {
+                "summary": "Endpoint para obtener métricas de departamentos por encima del promedio",
+                "tags": [
+                    "Métricas"
+                ],
+                "parameters": [{
+                    "name": "year",
+                    "in": "path",
+                    "description": "Año de las métricas",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Respuesta exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "department": {
+                                                        "type": "string"
+                                                    },
+                                                    "hired": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    }
+                                                },
+                                                "required": ["department", "hired", "id"]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/employee_hired/metrics/{year}": {
+            "get": {
+                "summary": "Endpoint para obtener métricas de empleados contratados por trimestre",
+                "tags": [
+                    "Métricas"
+                ],
+                "parameters": [{
+                    "name": "year",
+                    "in": "path",
+                    "description": "Año de las métricas",
+                    "required": true,
+                    "schema": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Respuesta exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Q1": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "Q2": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "Q3": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "Q4": {
+                                                        "type": "integer",
+                                                        "format": "int32"
+                                                    },
+                                                    "department": {
+                                                        "type": "string"
+                                                    },
+                                                    "job": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": ["Q1", "Q2", "Q3", "Q4", "department", "job"]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error en el servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
