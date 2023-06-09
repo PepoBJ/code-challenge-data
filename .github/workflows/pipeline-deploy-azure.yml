@@ -14,7 +14,7 @@ jobs:
 
       - name: Build and test
         run: |
-          docker build -f Dockerfile.test -t code-challenge-test .
+          docker build -f Dockerfile.tests -t code-challenge-test .
           docker run --name code-challenge-test-container code-challenge-test pytest -v test
 
       - name: Check test results
