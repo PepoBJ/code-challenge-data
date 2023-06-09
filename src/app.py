@@ -39,8 +39,8 @@ def create_app():
 
     @app.route("/")
     def index():
-        return redirect("/swagger")
-        
+        return "Wellcome to code challente!"
+
     ### end swagger ###
 
     return app
