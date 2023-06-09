@@ -1,28 +1,26 @@
-name: Run Unit Tests
-
+name: Deploy to Azure
 on:
   push:
     branches:
       - master
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and run tests
-        run: docker build -f Dockerfile.tests -t code-challenge-test .
-        
-      - name: Run unit tests
-        run: docker run code-challenge-test pytest
+      - name: Build and test
+        run: |
+          docker build -f Dockerfile.test -t code-challenge-test .
+          docker run --name code-challenge-test-container code-challenge-test pytest -v test
 
-      - name: Check test status
-        id: test-status
-        run: echo "::set-output name=status::$(if [ ${{ steps.test.outcome }} == 'success' ]; then echo 'success'; else echo 'failure'; fi)"
+      - name: Check test results
+        run: |
+          docker logs code-challenge-test-container
+          docker wait code-challenge-test-container
+          docker rm code-challenge-test-container
 
-      - name: Finish Workflow
-        if: steps.test-status.outputs.status == 'success'
-        run: echo "All tests passed successfully."
+          exit $(docker inspect --format='{{.State.ExitCode}}' code-challenge-test-container)

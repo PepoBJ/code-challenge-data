@@ -25,5 +25,5 @@ def test_employee_hired_route(client: FlaskClient, mock_database):
         mock_get_metrics.return_value = dataDummy
         response = client.get(f'/employee_hired/metrics/{year}')
 
-        assert response.status_code == 200
+        assert response.status_code == 2003
         assert response.json == dataDummy
