@@ -46,3 +46,20 @@ def test_charge_data_route_upload_failed(client: FlaskClient, mock_database):
 
     assert status_code == 400
     assert response.json == {'error': 'No se han enviado archivos CSV'}
+
+def test_charge_data_route(client: FlaskClient, mock_database):
+    table_name = 'departments'
+    csv_path = os.path.abspath('./test/resources/departments.csv')
+
+    with open(csv_path, 'rb') as file:
+        csv_data = file.read()
+        file_storage = FileStorage(stream=io.BytesIO(csv_data), filename='departments.csv')
+
+    with mock.patch.object(ChargeDataController, 'handle_charge') as mock_handle_charge:
+        dataDummy = {'message': 'Datos cargados con éxito.'}
+
+        mock_handle_charge.return_value = dataDummy
+        response = client.post('/charge', data={'object': table_name, 'files': [file_storage]})
+
+        assert response.status_code == 200
+        assert response.json == dataDummy
