@@ -3,3 +3,6 @@ flask-swagger
 flask_swagger_ui
 pyodbc
 python-dotenv
+pytest
+unittest2
+pytest-mock
