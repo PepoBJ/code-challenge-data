@@ -1,4 +1,5 @@
 name: Deploy to Azure
+
 on:
   push:
     branches:
@@ -9,18 +10,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Generate .env file
+        run: |
+          echo "HOST=0.0.0.0" > .env
+          echo "DEBUG=True" >> .env
+          echo "CONNECTION_STRING_AZURE_SQL=${{ secrets.CONNECTION_STRING_AZURE_SQL }}" >> .env
+          echo "PORT=5000" >> .env
 
       - name: Build and test
         run: |
-          docker build -f Dockerfile.tests -t code-challenge-test .
-          docker run --name code-challenge-test-container code-challenge-test pytest -v test
+          docker build -t code-challenge-test-image -f Dockerfile.tests .
+          docker run --name code-challenge-test-container code-challenge-test-image
+
+      - name: Get test container exit code
+        id: test-container
+        run: echo "::set-output name=exit_code::$(docker inspect --format='{{.State.ExitCode}}' code-challenge-test-container)"
 
       - name: Check test results
         run: |
-          docker logs code-challenge-test-container
-          docker wait code-challenge-test-container
-          docker rm code-challenge-test-container
+          if [ ${{ steps.test-container.outputs.exit_code }} -ne 0 ]; then
+            echo "Tests failed. Exiting..."
+            exit 1
+          else
+            echo "Tests passed. Proceeding to Azure deployment..."
+          fi
 
-          exit $(docker inspect --format='{{.State.ExitCode}}' code-challenge-test-container)
+      - name: Publish to Azure
+        if: steps.test-container.outputs.exit_code == 0
+        uses: azure/docker-login@v1
+        with:
+          login-server: apicodechallenged01.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      
+      - name: Build and push Docker image to Azure Container Registry
+        if: steps.test-container.outputs.exit_code == 0
+        run: |
+          docker build -t apicodechallenged01.azurecr.io/code-challenge-image -f Dockerfile .
+          docker push apicodechallenged01.azurecr.io/code-challenge-image
