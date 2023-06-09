@@ -36,6 +36,11 @@ def create_app():
         }
     )
     app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+
+    @app.route("/")
+    def index():
+        return redirect("/swagger")
+        
     ### end swagger ###
 
     return app
