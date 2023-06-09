@@ -1,0 +1,20 @@
+# Usa una imagen base con Python y las bibliotecas de prueba necesarias
+FROM python:3.11
+
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Copia el contenido de la carpeta src y test al directorio de trabajo del contenedor
+COPY ./src /app/src
+COPY ./test /app/test
+
+# Copia el archivo requirements.txt al directorio de trabajo del contenedor
+COPY ./requirements.txt /app/requirements.txt
+
+# Instala las dependencias del proyecto y gettext-base para manejar las variables de entorno
+RUN apt-get update && \
+    apt-get install -y unixodbc-dev gettext-base && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Ejecuta los comandos para ejecutar los tests
+CMD ["pytest", "-v", "test"]

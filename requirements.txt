@@ -6,3 +6,4 @@ python-dotenv
 pytest
 unittest2
 pytest-mock
+sqlalchemy
